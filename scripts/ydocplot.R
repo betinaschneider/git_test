@@ -76,3 +76,58 @@ stations_all <- get_stations_metadata(
   include_closed = FALSE,
   rich           = TRUE
 )
+
+stations_all$station_name %>% unique()
+
+stations_all %>% filter(station_name == "Cowalellup")
+
+# 1) Find Cowalellup in your metadata table
+cowalellup <- stations_all %>%
+  filter(str_to_lower(station_name) == "cowalellup")
+
+
+# getNamespaceExports("stringr")
+# getNamespaceExports("weatherOz")
+# getNamespaceExports("lubridate")
+
+
+
+datevec <- lubridate::ymd("2025-07-17") + lubridate::duration(c(0:1), units = "days")
+
+df_list <- list()
+
+# for (usedate in datevec){
+for (i in 1:length(datevec)){
+  
+  # i<-1 ##test
+
+  usedate <- datevec[i]
+  usedate_str <- paste0(usedate %>% as.character(), " 00:00:00")
+
+  df_list[[i]] <- get_dpird_minute(
+    station_code = cowalellup$station_code,
+    start_date_time	= usedate_str,
+    minutes = 1440L,
+    values = "all",
+    api_key = DPIRD_API_KEY
+  )
+
+  print(paste0("Data collected for date: ", datevec[i]))
+
+} #end for loop
+
+df_list %>% length()
+df_list %>% str()
+
+
+#' combine
+#' time series plot
+#' time vs temp
+#' time vs humidity
+#' superimosed plot with two vertical axes
+
+
+# cowalellup_minute <- bind_rows(period_01, period_02) %>%
+#   arrange(date_time)
+
+# cowalellup_minute
