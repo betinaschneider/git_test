@@ -119,15 +119,100 @@ for (i in 1:length(datevec)){
 df_list %>% length()
 df_list %>% str()
 
+names(df_list) <- as.character(datevec)
 
-#' combine
-#' time series plot
+## Combining datevec in one table
+
+cowalellup_data <- bind_rows(df_list) 
+
+names(cowalellup_data)
+
+View(cowalellup_data)
+
+# cowalellup_filter_minutes
+
+attr(cowalellup_data$date_time, "tzone")
+
+start_time <- lubridate::ymd_hms("2025-07-17 04:00:00", tz = "Australia/Perth")
+end_time   <- lubridate::ymd_hms("2025-07-18 13:00:00", tz = "Australia/Perth")
+
+attr(cowalellup_data$date_time, "tzone")
+
+filtered_data <- cowalellup_data %>%
+  filter(
+    date_time >= start_time &
+    date_time <= end_time
+  )
+
+View(filtered_data)
+
+# time series plot temp and humidity
+
+line1 <- filtered_data$air_temperature
+line2 <- filtered_data$relative_humidity
+time <- filtered_data$date_time
+ 
 #' time vs temp
+
+plot(
+  time,
+  line1,
+  type = "l",
+  col = "blue",
+  lwd = 1,
+  xlab = "Date Time",
+  ylab = "Air Temperature (°C)",
+  main = "Temperature over Time"
+)
+
 #' time vs humidity
+
+plot(
+  time,
+  line2,
+  type = "l",
+  col = "red",
+  lwd = 1,
+  xlab = "Date Time",
+  ylab = "Relative Humidity",
+  main = "Humidity over Timer"
+)
+
 #' superimosed plot with two vertical axes
 
+par(mar = c(5, 4, 4, 5))  # increase right margin
 
-# cowalellup_minute <- bind_rows(period_01, period_02) %>%
-#   arrange(date_time)
+plot(
+  time,
+  line1,
+  type = "l",
+  col = "blue",
+  lwd = 2,
+  xlab = "Date Time",
+  ylab = "Air Temperature (°C)",
+  main = "Temperature and Humidity"
+)
 
-# cowalellup_minute
+par(new = TRUE)
+
+plot(
+  time,
+  line2,
+  type = "l",
+  col = "red",
+  lwd = 2,
+  axes = FALSE,   # remove axes
+  xlab = "",
+  ylab = ""
+)
+
+axis(side = 4)
+mtext("Relative Humidity (%)", side = 4, line = 2)
+
+legend("bottomright",
+       legend = c("Temperature", "Humidity"),
+       col = c("blue", "red"),
+       lty = 1,
+       lwd = 2)
+
+
